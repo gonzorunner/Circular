@@ -1,0 +1,28 @@
+{
+  "name": "circular-trade-app",
+  "version": "1.0.0",
+  "description": "Web application for local exchange through barter or gifting",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install-backend": "cd server/backend && npm install",
+    "install-frontend": "cd Frontend && npm install --force",
+    "start-backend": "(cd server/backend) && (docker-compose up -d) && (npm start)",
+    "start-frontend": "cd Frontend && npm start",
+    "start": "(npm run start-backend) & (npm run start-frontend)",
+    "postinstall": "(npm run install-backend) && (npm run install-frontend)"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IanC27/circular-trade-app.git"
+  },
+  "author": "The Circular Circle",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/IanC27/circular-trade-app/issues"
+  },
+  "homepage": "https://github.com/IanC27/circular-trade-app#readme",
+  "dependencies": {
+    "react-google-autocomplete": "^2.7.3"
+  }
+}

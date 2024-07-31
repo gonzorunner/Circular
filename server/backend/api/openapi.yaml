@@ -1,0 +1,456 @@
+openapi: '3.0.3'
+info:
+  description: CSE183 Assignment 8 Backend
+  version: 0.1.0
+  title: CSE183 Assignment 8 Backend
+
+servers:
+  - url: http://localhost:3010/v0
+
+paths:
+  /dummy:
+    get:
+      description: Dummy Endpoint
+      responses:
+        200:
+          description: Succesful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DummyResponse'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /listings:
+    get:
+      description: returns all listings
+      responses:
+        200:
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListingResponse'
+        404:
+          description: Succesful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      description: posts a new listing
+      requestBody:
+        description: Listing to add
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/newListing'
+      responses:
+        201:
+          description: Application Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/fullListing'
+        400:
+          description: unexpected properties
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /test:
+    post:
+      description: post offer test
+      requestBody:
+        description: reply to add
+        required: true
+        content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/newTest'
+      responses:
+        201:
+          description: Application Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/testEntry'
+        400:
+          description: unexpected properties
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /offer:
+    post:
+      description: posts a new offer
+      requestBody:
+        description: Offer to add
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/newOffer'
+      responses:
+        201:
+          description: Application Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/fullOffer'
+        400:
+          description: unexpected properties
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /offer/{id}:
+    delete:
+      description: deletes an offer
+      responses:
+        200:
+          description: Offer deleted
+        400:
+          description: Offer could not be deleted
+  /uploadImg:
+    post:
+      description: upload image file
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/newImage'  
+      responses:
+        200:
+          description: Image Uploaded was a success.
+  /offers/{id}:
+    get:
+      description: Get offers associated with a listing
+      operationId: getOffersByListingId
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: id of listing
+      responses:
+        200:
+          description: Listing response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OfferResponse'
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      description: deletes offers associated with a particular listing
+      responses:
+        200:
+          description: Offers deleted
+        400:
+          description: Offers could not be deleted
+  /listing/{id}:
+    get:
+      description: get listing by id
+      operationId: getById
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: id of listing
+      responses:
+        200:
+          description: Listing response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/testing'
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      description: deletes an offer
+      responses:
+        200:
+          description: Offers deleted
+        400:
+          description: Offers could not be deleted
+  /notifications/{user}:
+    get:
+      operationId: getNotificationsForUser
+      description: get notifications for a user
+      parameters:
+        - in: path
+          name: user
+          description: the user whose notifications will be fetched
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Notifications response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationsResponse'
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /notifications/offer_id/{offer_id}:
+    put:
+      operationId: updateOffer
+      description: Update the seen key of the corresponding offer's JSON object to true
+      parameters:
+        - in: path
+          name: offer_id
+          description: ID of the offer to update
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Offer updated response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/fullOffer'
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+
+    GeocodeResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            type: object
+            properties: 
+              formatted_address:
+                type: string
+              geometry:
+                type: object
+                properties:
+                  location:
+                    type: object
+                    properties:
+                      lat:
+                        type: number
+                      lng: 
+                        type: number
+
+    newImage:
+      type: object
+      properties:
+        image:
+          type: string
+          format: binary
+
+    newTest:
+      type: object
+      properties:
+        message:
+          type: string 
+        name:
+          type: string
+        id:
+          type: string
+          format: uuid
+
+    testEntry:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid 
+
+    newListing:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        image:
+          type: string
+        requests:
+          type: string
+        giveaway:
+          type: boolean
+        address:
+          type: string
+        user:
+          type: string
+
+
+    newOffer:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        image:
+          type: string
+
+
+    Error:
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+      required:
+        - code
+        - message
+
+    DummyResponse:
+      properties:
+        message:
+          type: string
+      required:
+        - message
+
+    ListingResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/Listing'
+
+    OfferResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/fullOffer'
+
+    NotificationsResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/Notifications'
+
+    Notifications:
+      type: object
+      properties:
+        id:
+          type: string
+        user:
+          type: string
+        item:
+          type: string
+        date:
+          type: string
+        seen:
+          type: boolean
+        offer_id:
+          type: string
+          format: uuid
+
+    Listing:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        state:
+          type: string
+        image:
+          type: string
+        giveaway:
+          type: boolean
+
+    fullListing:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        image:
+          type: string
+        requests:
+          type: string
+        giveaway:
+          type: boolean
+        state:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+
+    fullOffer:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        image:
+          type: string
+        date:
+          type: string
+          format: date-time
+        requestedListingId:
+          type: string
+          format: uuid
+        user:
+          type: string
+        seen:
+          type: boolean
+        accepted:
+          type: boolean
+
+    testing:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        image: 
+          type: string
+        state:
+          type: string
+        requests:
+          type: string
+        user:
+          type: string      
+        
